@@ -23,7 +23,7 @@ pressure test[PressureTestTool](https://github.com/linyacool/WebBench):
 c:client number t:time (seconds) 2:http1.1 k:Keep-Live
 running 1000 clients
 ./bin/webbench -t 60 -c 1000 -2 -k --get  http://127.0.0.1:8888/hello
-![alt text]()
+![alt text](https://github.com/anson0/simpleHttpWebServer/blob/master/memoryCpuUsage.png)
 
 
  
