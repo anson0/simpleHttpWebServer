@@ -28,13 +28,13 @@ Test1(1000 clients):
 server(4 threads in thread-pool):./all -p 8888 -t 4
 client(1000 clients Keep-live 60 secs):./bin/webbench -t 60 -c 1000 -2 -k --get  http://127.0.0.1:8888/hello
 ![alt text](https://github.com/anson0/simpleHttpWebServer/blob/master/cpuUseageMemory.png)
-![alt text](https://github.com/anson0/simpleHttpWebServer/blob/master/tooResult.png)
+![alt text](https://github.com/anson0/simpleHttpWebServer/blob/master/toolResult.png)
 
 Test1(10000 clients):
 server(4 threads in thread-pool):./all -p 8888 -t 4
 client(10000 clients Keep-live 60 secs):./bin/webbench -t 60 -c 10000 -2 -k --get  http://127.0.0.1:8888/hello
-![alt text](https://github.com/anson0/simpleHttpWebServer/blob/master/cpuUseageMemory2.png)
-![alt text](https://github.com/anson0/simpleHttpWebServer/blob/master/tooResult2.png)
+![alt text](https://github.com/anson0/simpleHttpWebServer/blob/master/cpuUsageMemory2.png)
+![alt text](https://github.com/anson0/simpleHttpWebServer/blob/master/toolResult2.png)
 
 
 
