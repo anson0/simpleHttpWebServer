@@ -33,7 +33,7 @@ client(1000 clients Keep-live 60 secs):./bin/webbench -t 60 -c 1000 -2 -k --get 
 Test1(10000 clients):
 server(4 threads in thread-pool):./all -p 8888 -t 4
 client(10000 clients Keep-live 60 secs):./bin/webbench -t 60 -c 10000 -2 -k --get  http://127.0.0.1:8888/hello
-![alt text](https://github.com/anson0/simpleHttpWebServer/blob/master/cpuUsageMemory2.png)
+![alt text](https://github.com/anson0/simpleHttpWebServer/blob/master/memoryCpuUsage2.png)
 ![alt text](https://github.com/anson0/simpleHttpWebServer/blob/master/toolResult2.png)
 
 
