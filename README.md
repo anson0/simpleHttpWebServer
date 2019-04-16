@@ -1,4 +1,4 @@
-Unix: [![Unix Build Status](https://travis-ci.org/capnproto/capnproto.svg?branch=master)](https://travis-ci.org/capnproto/capnproto)
+Ubuntu: [![Ubuntu Build Status](https://travis-ci.org/capnproto/capnproto.svg?branch=master)](https://travis-ci.org/capnproto/capnproto)
 # simpleHttpWebServer
 This is a simple http web server project with  thread pool mechanism,supporting simple request like HEAD,GET;
 
