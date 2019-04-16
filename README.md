@@ -38,8 +38,10 @@ c:client number t:time (seconds) 2:http1.1 k:Keep-Live
 ```
 
 Test1(1000 clients):
-server(4 threads in thread-pool):./all -p 8888 -t 4
-client(1000 clients Keep-live 60 secs):./bin/webbench -t 60 -c 1000 -2 -k --get  http://127.0.0.1:8888/hello
+server(4 threads in thread-pool):
+```./all -p 8888 -t 4```
+client(1000 clients Keep-live 60 secs):
+```./bin/webbench -t 60 -c 1000 -2 -k --get  http://127.0.0.1:8888/hello```
 ![alt text](https://github.com/anson0/simpleHttpWebServer/blob/master/cpuUseageMemory.png)
 ![alt text](https://github.com/anson0/simpleHttpWebServer/blob/master/toolResult.png)
 
