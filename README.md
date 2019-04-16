@@ -89,7 +89,7 @@ client(1000 clients Keep-live 60 secs):
 ./bin/webbench -t 60 -c 1000 -2 -k --get  http://127.0.0.1:8888/hello
 ```
 ![alt text](https://github.com/anson0/simpleHttpWebServer/blob/master/testPictures/test_8_1k.png)
-![alt text](https://github.com/anson0/simpleHttpWebServer/blob/master/testPictures/test_8_1k_esult.png)
+![alt text](https://github.com/anson0/simpleHttpWebServer/blob/master/testPictures/test_8_1k_result.png)
 
 
 
@@ -145,7 +145,7 @@ client(10000 clients Keep-live 60 secs):
 ```
 ./bin/webbench -t 60 -c 10000 -2 -k --get  http://127.0.0.1:8888/hello
 ```
-![alt text](https://github.com/anson0/simpleHttpWebServer/blob/master/testPictures/test_8_10k.png)
+![alt text](https://github.com/anson0/simpleHttpWebServer/blob/master/testPictures/test_8_10K.png)
 ![alt text](https://github.com/anson0/simpleHttpWebServer/blob/master/testPictures/test_8_10k_result.png)
 
 
