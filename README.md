@@ -9,12 +9,16 @@ Process has a main thread and a thread pool,user can specify the number of threa
 * main thread duty:
 
       wait interested events happen,and once any event happened,the main thread get activated.
-      if it is a connection request,the main thread will accept it,adding it to interested events for monitor;
-      if it is a event epollin reading avaiable,the main thread will read all the arrived input data,and then push
-       a task to queue for thread-pool taking over handling analyze the receive data and reply back to request.
+      if it is a connection request,the main thread will accept it,adding it to interested events
+      for monitor;
+      if it is a event epollin reading avaiable,the main thread will read all the arrived input data,
+      and then push a task to queue for thread-pool taking over handling analyze the receive data and 
+      reply back to request.
 * thread-pool duty:
 
-       dealing with the queue task,i.e. analyze the received data and reply back to client request, this project using a buffer of unorder_map<int,string> to store all the current connection buffers,this buffer shared by all the threads,mutex lock  is used to prevent unexpected asynchrous modification.
+       dealing with the queue task,i.e. analyze the received data and reply back to client request, 
+       this project using a buffer of unorder_map<int,string> to store all the current connection buffers,
+       this buffer shared by all the threads,mutex lock  is used to prevent unexpected asynchrous modification.
 
 
 ## Build project :
