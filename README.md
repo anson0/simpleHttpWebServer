@@ -6,13 +6,13 @@ this is a simple http web server demo with  thread pool mechanism;
 Process has a main thread and a thread pool,user can specify the number of threads in thread pool through command input.
 
 
-**main thread duty**:
+* main thread duty:
 
                  wait interested events happen,and once any event happened,the main thread get activated.
                  if it is a connection request,the main thread will accept it,adding it to interested events for monitor;
                  if it is a event epollin reading avaiable,the main thread will read all the arrived input data,and then push
                  a task to queue for thread-pool taking over handling analyze the receive data and reply back to request.
-**thread-pool duty**:
+* thread-pool duty:
 
 
                  dealing with the queue task,i.e. analyze the received data and reply back to client request, this
