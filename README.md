@@ -160,7 +160,7 @@ Through test case 5-8,the result obviously show increase the number of threads d
 * C++11 thread,mutex,lock,smart pointers,lambda 
 * stl 
 * thread pool
-* asynchrous
+* asynchronous
 * IO multiplex epoll level trigger
 
 
