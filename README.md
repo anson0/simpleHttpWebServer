@@ -14,20 +14,20 @@ thread-pool duty:
 
 
 build project:
-...
+```
 make all
-...
+```
 
 run example(p:port number,t:thread number):
-...
+```
 ./all -p 8888 -t 4
-...
+```
 
 pressure test[PressureTestTool](https://github.com/linyacool/WebBench):
 c:client number t:time (seconds) 2:http1.1 k:Keep-Live
-...
+```
 ./bin/webbench -t 60 -c 1000 -2 -k --get  http://127.0.0.1:8888/hello
-...
+```
 
 Test1(1000 clients):
 server(4 threads in thread-pool):./all -p 8888 -t 4
