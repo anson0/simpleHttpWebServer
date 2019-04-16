@@ -31,7 +31,7 @@ run example(p:port number,t:thread number):
 ./all -p 8888 -t 4
 ```
 
-pressure test tool[WebBench](https://github.com/linyacool/WebBench)(already added in this repository,in case you may need it):<br/>
+pressure test tool[WebBench](https://github.com/linyacool/WebBench):<br/>
 c:client number t:time (seconds) 2:http1.1 k:Keep-Live
 ```
 ./bin/webbench -t 60 -c 1000 -2 -k --get  http://127.0.0.1:8888/hello
