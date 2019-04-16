@@ -42,12 +42,12 @@ public:
                      if (m_ptrPool->m_queueTask.empty()) {
                          m_ptrPool->m_cond.wait(lock);//  wait(&m_ptrPool->mu);
                      }
-                     printf("queue size %d\n",m_ptrPool->m_queueTask.size());
+                     //printf("queue size %d\n",m_ptrPool->m_queueTask.size());
 
                      bTemp = m_ptrPool->m_queueTask.dequeue(func);
-                     snprintf(buffTemp, sizeof(buffTemp), "id[%d]\n", m_idNumber);
+                     //snprintf(buffTemp, sizeof(buffTemp), "id[%d]\n", m_idNumber);
 
-                     write(STDOUT_FILENO, buffTemp, strlen(buffTemp));
+                     //write(STDOUT_FILENO, buffTemp, strlen(buffTemp));
                  }
                  //flush();
                  if(bTemp== true)

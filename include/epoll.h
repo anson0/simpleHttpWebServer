@@ -9,6 +9,7 @@
 //#include "server.h"
 #include "macros.h"
 #include <mutex>
+#include "threadPoolBarMain.h"
 class Server;
 class epoll {
 
@@ -16,11 +17,19 @@ public:
     std::weak_ptr<Server> m_ptrServer;
     //vector<struct epoll_event> m_mapEvents;
     //int m_cntEvents;
+    //epoll(int numThreadsMain,int cnt=NUMPOLLEVENTS):m_numThreads(numThreadsMain),poolMain(m_numThreads,m_pCondMain),m_bEventHappen(false){
     epoll(int cnt=NUMPOLLEVENTS){
-        m_epollFd=epoll_create(cnt);
-        //m_mapEvents.resize(MAXCONNECT);
-        //m_cntEvents=0;
+    //////thread pool for main//////////////////
+//            m_pCondMain=std::make_shared<std::condition_variable>();
+//            poolMain.m_pCond=m_pCondMain;
+//            poolMain.initialize();
+//////thread pool for main//////////////////
+            m_epollFd=epoll_create(cnt);
+            //m_mapEvents.resize(MAXCONNECT);
+            //m_cntEvents=0;
+
     }
+//    ~epoll(){poolMain.closePool();}
 
     void epoll_add(int fd);
 
@@ -37,11 +46,19 @@ public:
     }
 
     int poll();
+    void handlingEvent(struct epoll_event event);
+
 
 
 private:
     int m_epollFd;
     int m_listenSocket;
+//    int m_numThreads;
+//    std::shared_ptr<std::condition_variable> m_pCondMain;
+//    std::mutex              m_muMain;
+//    threadPoolMain poolMain;
+//    bool m_bEventHappen;
+
 
 
 };

@@ -87,7 +87,7 @@ private:
 class httpData {
 public:
     std::weak_ptr<Server> m_ptrServer;
-    std::mutex m_muData;
+    //std::mutex m_muData[MAXCONNECT];
     std::unordered_map<int,std::string> m_mapFd;//[MAXCONNECT];
 
     httpData(std::shared_ptr<Server> && temp){
@@ -99,7 +99,7 @@ public:
     void acceptConnection(int fd);
 
     int readAllData(const int& fd,int& bFlagReturn,char* pBuff,int nCountMax=MAXREADBYTES);
-    void readingEvent(struct epoll_event& event)
+    void readingEvent(struct epoll_event event)
     {
 //        if(event.events&EPOLLIN)
 //        {

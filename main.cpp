@@ -25,7 +25,8 @@ int main(int argc,char* argv[]){
     }
     //std::shared_ptr<Server> pServer(std::make_shared<Server>(Server(threadNum,port)));
     std::shared_ptr<Server> pServer(new Server(threadNum,port));//(std::make_shared<Server>(Server(threadNum,port)));
-    pServer->init();
+    if(false==pServer->init())
+        return -1;
     int result=pServer->start();
     if(result<0)
     {

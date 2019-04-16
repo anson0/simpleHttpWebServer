@@ -67,7 +67,11 @@ void httpData::acceptConnection(int listen_fd)
             close(accept_fd);
             continue;
         }
-
+        int optval=1;
+        if (setsockopt(accept_fd, SOL_SOCKET, SO_REUSEADDR,  &optval , sizeof(int)) < 0)
+        {
+            perror("setsockopt(SO_REUSEADDR) failed");
+        }
         // 设为非阻塞模式
         int ret = setSocketNonBlocking(accept_fd);
         if (ret < 0)
@@ -105,7 +109,8 @@ int httpData::readAllData(const int& fd,int& bFlagReturn,char* pBuff,int nCountM
                  close(fd);
                  if(auto temp=m_ptrServer.lock()) {
                      {
-                         std::unique_lock<std::mutex> lock(temp->mu);
+//                         std::unique_lock<std::mutex> lock(temp->mu);
+                         std::unique_lock<std::mutex> lock(temp->m_muArray[fd]);
                          m_mapFd[fd].clear();
                          //temp->m_epoll.updateData(fd);
                      }
@@ -124,7 +129,8 @@ int httpData::readAllData(const int& fd,int& bFlagReturn,char* pBuff,int nCountM
              if(auto temp=m_ptrServer.lock())
              {
                  {
-                     std::unique_lock<std::mutex> lock(temp->mu);
+//                     std::unique_lock<std::mutex> lock(temp->mu);
+                     std::unique_lock<std::mutex> lock(temp->m_muArray[fd]);
                      m_mapFd[fd].clear();
                      //temp->m_epoll.updateData(fd);
                  }
@@ -151,7 +157,8 @@ int httpData::readAllData(const int& fd,int& bFlagReturn,char* pBuff,int nCountM
          }
         if(auto temp=m_ptrServer.lock())
         {
-            std::unique_lock<std::mutex> lock(temp->mu);
+//            std::unique_lock<std::mutex> lock(temp->mu);
+            std::unique_lock<std::mutex> lock(temp->m_muArray[fd]);
             temp->m_data.m_mapFd[fd].append(pBuff,nCount);
         }
          nCountSum+=nCount;

@@ -34,7 +34,7 @@ void epoll::epoll_add(int fd)
         }
     }
     if(auto temp=m_ptrServer.lock()) {
-        std::unique_lock <std::mutex> lock(temp->mu);
+//        std::unique_lock <std::mutex> lock(temp->mu);
         //m_mapEvents[m_cntEvents] = event;
         //m_cntEvents++;
     }
@@ -43,10 +43,20 @@ void epoll::epoll_add(int fd)
 }
 
 int epoll::poll(){
+    struct epoll_event events[MAX_EVENTS];
     while (true)
     {
-#define MAX_EVENTS 10
-        struct epoll_event ev, events[MAX_EVENTS];
+
+        struct epoll_event ev;
+        for(int i=0;i<MAX_EVENTS;i++)
+            events[i].data.fd=-1;
+        //////thread pool for main//////////////////
+//        if(m_bEventHappen!=false&&poolMain.m_cntEvents!=0)
+//        {
+//            std::unique_lock<std::mutex>lock(m_muMain);
+//            m_pCondMain->wait(lock);
+//        }
+//////thread pool for main//////////////////
         volatile  int event_count = epoll_wait(m_epollFd, events, MAX_EVENTS, -1);//anson add volatile debug
         if (event_count < 0)
             perror("epoll wait error");
@@ -57,9 +67,22 @@ int epoll::poll(){
             return -1;
 
         }
-        printf("event cnt is [%d]\n",event_count);
+        //printf("event cnt is [%d]\n",event_count);//anson debug
+        //////thread pool for main//////////////////
+//        if(event_count>0)
+//        {
+//            m_bEventHappen=true;
+//            poolMain.m_cntEvents=event_count;
+//        }
+//////thread pool for main//////////////////
         for(int i=0;i<event_count;i++)
         {
+            //////thread pool for main//////////////////
+//            auto request=[events,i,this](){
+//                this->handlingEvent(events[i]);
+//            };
+//            poolMain.submit(request);
+           ////thread pool for main//////////////////
 //            auto request=[events,i,temp]( )
 //            {
 //                struct epoll_event e=events[i];
@@ -96,7 +119,8 @@ int epoll::poll(){
 
 
                                 {
-                                    std::unique_lock<std::mutex> lock(temp->mu);
+//                                    std::unique_lock<std::mutex> lock(temp->mu);
+                                    std::unique_lock<std::mutex> lock(temp->m_muArray[events[i].data.fd]);
                                     temp->m_data.m_mapFd[events[i].data.fd].clear();
                                     //temp->m_epoll.updateData(fd);
                                 }
@@ -113,7 +137,8 @@ int epoll::poll(){
                         //bFlagReturn = -1;
 
                             {
-                                std::unique_lock<std::mutex> lock(temp->mu);
+//                                std::unique_lock<std::mutex> lock(temp->mu);
+                                std::unique_lock<std::mutex> lock(temp->m_muArray[events[i].data.fd]);
                                 temp->m_data.m_mapFd[events[i].data.fd].clear();
                                 //temp->m_epoll.updateData(fd);
                             }
@@ -122,7 +147,8 @@ int epoll::poll(){
 
                     }
                     {
-                        std::unique_lock<std::mutex> lock(temp->mu);
+//                        std::unique_lock<std::mutex> lock(temp->mu);
+                        std::unique_lock<std::mutex> lock(temp->m_muArray[events[i].data.fd]);
                         temp->m_data.m_mapFd[events[i].data.fd].append(pBuff,nCount);
                     }
                     //nCountSum+=nCount;
@@ -135,11 +161,96 @@ int epoll::poll(){
                         temp->m_data.readingEvent(e);
 
                     };
-                    printf("add event fd [%d]\n",events[i].data.fd);
+//                    printf("add event fd [%d]\n",events[i].data.fd);
                     temp->pool.submit(request);
 
                 }
             }
+        }
+    }
+
+}
+
+
+void epoll::handlingEvent(struct epoll_event event){
+    auto temp=m_ptrServer.lock();
+    if(!temp)
+    {
+        perror("epoll get server failure\n");
+        return ;
+
+    }
+    if(event.data.fd==temp->getListenSocket())
+    {
+        temp->m_data.acceptConnection(event.data.fd);
+    } else
+    {
+        //drain the coming data
+        //std::shared_ptr<string> sBuff;
+        char pBuff[MAXREADBYTES];
+        int nCount;
+        bool bEventDealingFinish=false;
+        do{
+            nCount = read(event.data.fd, pBuff, MAXREADBYTES);
+            if(nCount<0)
+            {
+                if(errno==EAGAIN)
+                {
+                    bEventDealingFinish=true;
+                    break;
+                }
+                else if(errno==EINTR){
+                    continue;
+                }
+                else{
+
+
+                    {
+//                                    std::unique_lock<std::mutex> lock(temp->mu);
+                        std::unique_lock<std::mutex> lock(temp->m_muArray[event.data.fd]);
+                        temp->m_data.m_mapFd[event.data.fd].clear();
+                        //temp->m_epoll.updateData(fd);
+                    }
+                    epoll_del(event.data.fd);
+                    close(event.data.fd);
+                    perror("ooops error happens");
+                    //bFlagReturn=-1;
+                    break;
+
+                }
+            }
+            else if(nCount==0) {
+
+                //bFlagReturn = -1;
+
+                {
+//                                std::unique_lock<std::mutex> lock(temp->mu);
+                    std::unique_lock<std::mutex> lock(temp->m_muArray[event.data.fd]);
+                    temp->m_data.m_mapFd[event.data.fd].clear();
+                    //temp->m_epoll.updateData(fd);
+                }
+                temp->m_epoll.epoll_del(event.data.fd);
+                close(event.data.fd);
+
+            }
+            {
+//                        std::unique_lock<std::mutex> lock(temp->mu);
+                std::unique_lock<std::mutex> lock(temp->m_muArray[event.data.fd]);
+                temp->m_data.m_mapFd[event.data.fd].append(pBuff,nCount);
+            }
+            //nCountSum+=nCount;
+        }while(nCount>0);
+        if(bEventDealingFinish==true)
+        {
+            auto request=[event,temp]( )
+            {
+
+                temp->m_data.readingEvent(event);
+
+            };
+//                    printf("add event fd [%d]\n",events[i].data.fd);
+            temp->pool.submit(request);
+
         }
     }
 

@@ -17,14 +17,15 @@ public:
     threadPool pool;
     epoll m_epoll;
     httpData m_data;
-    std::mutex mu;
+    //std::mutex mu;
+    std::mutex m_muArray[MAXCONNECT];
     Server(int numThreadsInPool,int port):pool(numThreadsInPool),m_port_(port),m_data(NULL),m_epoll()
     {
         pool.initialize();
 
     }
 
-    void init();
+    bool init();
 //    {
 //        m_listenFd_=socket_bind_listen(m_port_);
 //        if(m_listenFd_==-1)

@@ -3,13 +3,13 @@
 //
 
 #include "server.h"
-void Server::init(){
+bool  Server::init(){
     m_listenFd_=socket_bind_listen(m_port_);
     if(m_listenFd_==-1)
     {
         std::cout<<"fail to listen\n"<<std::endl;
         shutdown();
-        return;
+        return false;
 
     }
     setSocketNonBlocking(m_listenFd_);
@@ -18,5 +18,6 @@ void Server::init(){
     m_data.m_ptrServer=getSharedServer();
     m_data.setListenSocket(m_listenFd_);
     m_epoll.epoll_add(m_listenFd_);
+    return true;
 
 }
