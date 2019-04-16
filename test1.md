@@ -54,10 +54,11 @@ client(1000 clients Keep-live 60 secs):
 
 
 
+
 ## Test 2
   *Test scenario*: with client number fixed to 10000,and all clients keep alive up to 60 seconds,change the number of threads in server thread-pool,to compare the performance when use different number of threads in handling request. <br/>
 
-* __case 1:__ <br/>
+* __case 5:__ <br/>
 server(2 threads in thread-pool):
 ```
 ./all -p 8888 -t 2
@@ -70,7 +71,7 @@ client(10000 clients Keep-live 60 secs):
 ![alt text](https://github.com/anson0/simpleHttpWebServer/blob/master/testPictures/test_2_10k_result.png)
 
 ***
-* __case 2:__<br/>
+* __case 6:__<br/>
 server(4 threads in thread-pool):
 ```
 ./all -p 8888 -t 4
@@ -83,7 +84,7 @@ client(10000 clients Keep-live 60 secs):
 ![alt text](https://github.com/anson0/simpleHttpWebServer/blob/master/testPictures/test_4_10k_result.png)
 
 ***
-* __case 3:__<br/>
+* __case 7:__<br/>
 server(6 threads in thread-pool):
 ```
 ./all -p 8888 -t 6
@@ -96,7 +97,7 @@ client(10000 clients Keep-live 60 secs):
 ![alt text](https://github.com/anson0/simpleHttpWebServer/blob/master/testPictures/test_6_10k_result.png)
 
 ***
-* __case 4:__<br/>
+* __case 8:__<br/>
 server(8 threads in thread-pool):
 ```
 ./all -p 8888 -t 8
