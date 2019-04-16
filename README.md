@@ -1,6 +1,6 @@
 
 # simpleHttpWebServer
-This is a simple http web server demo with  thread pool mechanism;
+This is a simple http web server project with  thread pool mechanism,supporting simple request like HEAD,GET;
 
 ## Principle:
 Process has a main thread and a thread pool,user can specify the number of threads in thread pool through command input.
@@ -25,7 +25,7 @@ Process has a main thread and a thread pool,user can specify the number of threa
 ```
 make all
 ```
-## Test
+## Run
 run example(p:port number,t:thread number):
 ```
 ./all -p 8888 -t 4
@@ -149,7 +149,19 @@ client(10000 clients Keep-live 60 secs):
 ![alt text](https://github.com/anson0/simpleHttpWebServer/blob/master/testPictures/test_8_10k_result.png)
 
 
+## Test Result
+Test case 1-4 are 1000 clients keep live and sending data for 1 min,the result shows thread number 4 is optimal among<br/> 2,4,6,8 threads scenerio in thread-pool;<br/>
+Test case 5-8 are 10000 clients keep live and sending data for 1 min,the result shows thread number 2 is optimal among<br/> 2,4,6,8 threads scenerio in thread-pool;<br/>
+Through test case 5-8,the result obviously show increase the number of threads downgrade the performance greatly when there is huge number of clients long connection and keeping sending request.
 
+
+
+### Main techniques involved in this project:
+* C++11 thread,mutex,lock,smart pointers,lambda 
+* stl 
+* thread pool
+* asynchrous
+* IO multiplex epoll level trigger
 
 
 
