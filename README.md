@@ -1,6 +1,6 @@
 
 # simpleHttpWebServer
-this is a simple http web server demo with  thread pool mechanism;
+This is a simple http web server demo with  thread pool mechanism;
 
 ## Principle:
 Process has a main thread and a thread pool,user can specify the number of threads in thread pool through command input.
