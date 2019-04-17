@@ -1,6 +1,6 @@
 Ubuntu: [![Ubuntu Build Status](https://travis-ci.org/capnproto/capnproto.svg?branch=master)](https://travis-ci.org/capnproto/capnproto)
 # simpleHttpWebServer
-This is a simple http web server project with  thread pool mechanism,supporting simple request like HEAD,GET;
+*This is a simple http web server project with  thread pool mechanism,supporting simple request like HEAD,GET;This project main purpose test the server performance while vary the threads number in thread-pool .
 
 ## Principle:
 Process has a main thread and a thread pool,user can specify the number of threads in thread pool through command input.
