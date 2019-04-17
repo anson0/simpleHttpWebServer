@@ -1,6 +1,6 @@
 Ubuntu: [![Ubuntu Build Status](https://travis-ci.org/capnproto/capnproto.svg?branch=master)](https://travis-ci.org/capnproto/capnproto)
 # simpleHttpWebServer
-__This is a simple http web server project with  thread pool mechanism,supporting simple request like HEAD,GET;This project main purpose is to test the server performance while vary the threads number in thread-pool .__
+__This is a simple http web server project with  thread pool mechanism,supporting simple request like HEAD,GET,POST,support short connection and long connection;This project main purpose is to test the server performance while vary the threads number in thread-pool .__
 
 ## Principle:
 Process has a main thread and a thread pool,user can specify the number of threads in thread pool through command input.
@@ -23,14 +23,18 @@ Process has a main thread and a thread pool,user can specify the number of threa
 
 ## Build project :
 ```
-make all
+make 
 ```
 ## Run
 run example(p:port number,t:thread number):
 ```
 ./all -p 8888 -t 4
 ```
-
+Get Method:<br/>
+![alt text](https://github.com/anson0/simpleHttpWebServer/blob/master/index.png)
+Put Method:<br/>
+![alt text](https://github.com/anson0/simpleHttpWebServer/blob/master/post1.png)
+![alt text](https://github.com/anson0/simpleHttpWebServer/blob/master/post2.png)
 pressure test tool[WebBench](https://github.com/linyacool/WebBench):<br/>
 c:client number t:time (seconds) 2:http1.1 k:Keep-Live
 ```
