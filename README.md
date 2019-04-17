@@ -30,12 +30,13 @@ run example(p:port number,t:thread number):
 ```
 ./all -p 8888 -t 4
 ```
-Get Method:<br/>
+<br/>__Get Method Test:__<br/>
 ![alt text](https://github.com/anson0/simpleHttpWebServer/blob/master/index.png)
-Put Method:<br/>
+<br>__Put Method Test:__<br/>
 ![alt text](https://github.com/anson0/simpleHttpWebServer/blob/master/post1.png)
 ![alt text](https://github.com/anson0/simpleHttpWebServer/blob/master/post2.png)
-pressure test tool[WebBench](https://github.com/linyacool/WebBench):<br/>
+
+<br/>For testing the server pallalism performance, pressure test tool[WebBench](https://github.com/linyacool/WebBench) is used:<br/>
 c:client number t:time (seconds) 2:http1.1 k:Keep-Live
 ```
 ./bin/webbench -t 60 -c 1000 -2 -k --get  http://127.0.0.1:8888/hello
