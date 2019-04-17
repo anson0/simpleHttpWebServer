@@ -32,7 +32,7 @@ run example(p:port number,t:thread number):
 ```
 <br/>__Get Method Test:__<br/>
 ![alt text](https://github.com/anson0/simpleHttpWebServer/blob/master/index.png)
-<br>__Put Method Test:__<br/>
+<br>__Post Method Test:__<br/>
 ![alt text](https://github.com/anson0/simpleHttpWebServer/blob/master/post1.png)
 ![alt text](https://github.com/anson0/simpleHttpWebServer/blob/master/post2.png)
 
