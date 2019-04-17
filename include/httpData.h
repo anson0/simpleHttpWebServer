@@ -146,6 +146,7 @@ public:
             do{
                 int nCountEachTime;
                 nCountEachTime=write(fd, ptrToTransfer,std::min(nLeftCountToTransfer,MAXREADBYTES));
+                printf("response send [%s]\n",ptrToTransfer);//anson debug
                 if(nCountEachTime<0)
                 {
                     if(errno==EAGAIN)
@@ -166,7 +167,7 @@ public:
     }
     URIState parseURI( string& strRequest, int& method,string& strFileName,int& HTTPVersion_);
     HeaderState parseHeaders( string& strRequest,std::map<string,string>& sMapHeaderInfo,int& hstate);
-    AnalysisState analysisRequest(const int fd,int & method_,map<string,string>& headers_,string& fileName,string& outBuffer_);
+    AnalysisState analysisRequest(const int fd,int & method_,map<string,string>& headers_,string& fileName,string& outBuffer_,bool &b);
     void parseRecvMsg(int fd);
     void handleError(int fd, int err_num, string short_msg);
     void setListenSocket(int fd){

@@ -52,8 +52,8 @@ void httpData::acceptConnection(int listen_fd)
     int accept_fd = 0;
     while((accept_fd = accept(listen_fd, (struct sockaddr*)&client_addr, &client_addr_len)) > 0)
     {
-        cout << inet_ntoa(client_addr.sin_addr) << endl;
-        cout << ntohs(client_addr.sin_port) << endl;
+        //cout << inet_ntoa(client_addr.sin_addr) << endl;
+        //cout << ntohs(client_addr.sin_port) << endl;
         /*
         // TCP的保活机制默认是关闭的
         int optval = 0;
@@ -106,7 +106,7 @@ int httpData::readAllData(const int& fd,int& bFlagReturn,char* pBuff,int nCountM
                  continue;
              }
              else{
-                 close(fd);
+
                  if(auto temp=m_ptrServer.lock()) {
                      {
 //                         std::unique_lock<std::mutex> lock(temp->mu);
@@ -116,6 +116,7 @@ int httpData::readAllData(const int& fd,int& bFlagReturn,char* pBuff,int nCountM
                      }
                      temp->m_epoll.epoll_del(fd);
                  }
+                 close(fd);
                  perror("ooops error happens");
                  bFlagReturn=-1;
                  break;
@@ -124,7 +125,7 @@ int httpData::readAllData(const int& fd,int& bFlagReturn,char* pBuff,int nCountM
          }
          else if(nCount==0)
          {
-             close(fd);
+
              bFlagReturn=-1;
              if(auto temp=m_ptrServer.lock())
              {
@@ -153,6 +154,7 @@ int httpData::readAllData(const int& fd,int& bFlagReturn,char* pBuff,int nCountM
 //
 //                 }
              }
+             close(fd);
              break;
          }
         if(auto temp=m_ptrServer.lock())
@@ -170,13 +172,32 @@ int httpData::readAllData(const int& fd,int& bFlagReturn,char* pBuff,int nCountM
 }
 
 
-AnalysisState httpData::analysisRequest(const int fd_,int & method_,map<string,string>& headers_,string& fileName_,string& outBuffer_)
+AnalysisState httpData::analysisRequest(const int fd_,int & method_,map<string,string>& headers_,string& fileName_,string& outBuffer_ ,bool & bKeepAlive)
 {
 
 
     if (method_ == METHOD_POST)
     {
        //currently disable this option
+        string header;
+        header += "HTTP/1.1 201 OK\r\n";
+        if(headers_.find("Connection") != headers_.end() && (headers_["Connection"] == "Keep-Alive" || headers_["Connection"] == "keep-alive"))
+        {
+            //keepAlive_ = true;
+            bKeepAlive=true;
+            header += string("Connection: Keep-Alive\r\n") + "Keep-Alive: timeout=" + to_string(DEFAULT_KEEP_ALIVE_TIME) + "\r\n";
+        }
+        outBuffer_="";
+
+        header += "Content-Length: " + std::to_string(m_mapFd[fd_].size() )+ "\r\n";
+        header += "Content-Type: text/html \r\n";
+        header += "Server: Web Server \r\n";
+        header+="Connection:"+headers_["Connection"]+"\r\n\r\n";
+        outBuffer_.append(header);
+        outBuffer_.append(m_mapFd[fd_]);
+        return ANALYSIS_SUCCESS;
+
+
     }
     else if (method_ == METHOD_GET || method_ == METHOD_HEAD)
     {
@@ -185,6 +206,7 @@ AnalysisState httpData::analysisRequest(const int fd_,int & method_,map<string,s
         if(headers_.find("Connection") != headers_.end() && (headers_["Connection"] == "Keep-Alive" || headers_["Connection"] == "keep-alive"))
         {
             //keepAlive_ = true;
+            bKeepAlive=true;
             header += string("Connection: Keep-Alive\r\n") + "Keep-Alive: timeout=" + to_string(DEFAULT_KEEP_ALIVE_TIME) + "\r\n";
         }
         int dot_pos = fileName_.find('.');
@@ -198,7 +220,7 @@ AnalysisState httpData::analysisRequest(const int fd_,int & method_,map<string,s
         // echo test
         if (fileName_ == "hello")
         {
-            outBuffer_ = "HTTP/1.1 200 OK\r\nContent-type: text/plain\r\n\r\nHello World";
+            outBuffer_ = "HTTP/1.1 200 OK\r\nContent-type: text/plain\r\nContent-Length:11\r\n\r\nHello World";
             return ANALYSIS_SUCCESS;
         }
 
@@ -212,7 +234,7 @@ AnalysisState httpData::analysisRequest(const int fd_,int & method_,map<string,s
         }
         header += "Content-Type: " + filetype + "\r\n";
         header += "Content-Length: " + to_string(sbuf.st_size) + "\r\n";
-        header += "Server: LinYa's Web Server\r\n";
+        header += "Server: Web Server\r\n";
         // 头部结束
         header += "\r\n";
         outBuffer_ += header;
@@ -253,13 +275,13 @@ void httpData::handleError(int fd, int err_num, string short_msg)
     body_buff += "<html><title>哎~出错了</title>";
     body_buff += "<body bgcolor=\"ffffff\">";
     body_buff += to_string(err_num) + short_msg;
-    body_buff += "<hr><em> LinYa's Web Server</em>\n</body></html>";
+    body_buff += "<hr><em> Web Server</em>\n</body></html>";
 
     header_buff += "HTTP/1.1 " + to_string(err_num) + short_msg + "\r\n";
     header_buff += "Content-Type: text/html\r\n";
     header_buff += "Connection: Close\r\n";
     header_buff += "Content-Length: " + to_string(body_buff.size()) + "\r\n";
-    header_buff += "Server: LinYa's Web Server\r\n";;
+    header_buff += "Server:  Web Server\r\n";;
     header_buff += "\r\n";
     // 错误处理不考虑writen不完的情况
     sprintf(send_buff, "%s", header_buff.c_str());
@@ -269,6 +291,7 @@ void httpData::handleError(int fd, int err_num, string short_msg)
     //writen(fd, send_buff, strlen(send_buff));
     response(fd,body_buff);
 }
+
 
 
 URIState httpData::parseURI( string& strRequest, int& method_,string& strFileName,int& HTTPVersion_)
@@ -369,7 +392,8 @@ URIState httpData::parseURI( string& strRequest, int& method_,string& strFileNam
 void httpData::parseRecvMsg(int fd){
     bool bFlagReuestComplete=false;
     int nIndexPosRequestEnd=0;
-    bFlagReuestComplete=checkRequestComplete(m_mapFd[fd],nIndexPosRequestEnd);
+    bFlagReuestComplete=checkRequestComplete(m_mapFd[fd],nIndexPosRequestEnd);//
+    printf("received [%s]\n",m_mapFd[fd].c_str());//anson debug
     if(bFlagReuestComplete==false)
     {
         //handleError(fd, 404, "Bad Request!");
@@ -385,6 +409,7 @@ void httpData::parseRecvMsg(int fd){
     string outBuffer_;
     int httpVersion=HTTP_11;
     int hState=H_START;
+    bool bKeepAliveEachClient=false;
     //ParseState hState_;
     int state_=STATE_PARSE_URI;
     do {
@@ -423,21 +448,23 @@ void httpData::parseRecvMsg(int fd){
         }
         if (state_ == STATE_RECV_BODY) {
             int content_length = -1;
-            if (sMapHeaderInfo.find("Content-length") != sMapHeaderInfo.end()) {
-                content_length = stoi(sMapHeaderInfo["Content-length"]);
+            if (sMapHeaderInfo.find("Content-Length") != sMapHeaderInfo.end()) {
+                content_length = atoi(sMapHeaderInfo["Content-Length"].c_str());
             } else {
                 //cout << "(state_ == STATE_RECV_BODY)" << endl;
                 error_ = true;
                 handleError(fd, 400, "Bad Request: Lack of argument (Content-length)");
+                printf("content-length is [%s]\n",sMapHeaderInfo["Content-length"].c_str());//anson debug
+
                 break;
             }
-            if (static_cast<int>(strRequest.size()) < content_length)
-                break;
+//            if (static_cast<int>(strRequest.size()) < content_length)
+//                break;
 
             state_ = STATE_ANALYSIS;
         }
         if (state_ == STATE_ANALYSIS) {
-            AnalysisState flag = this->analysisRequest(fd, method, sMapHeaderInfo, strFileName, outBuffer_);
+            AnalysisState flag = this->analysisRequest(fd, method, sMapHeaderInfo, strFileName, outBuffer_,bKeepAliveEachClient);
             if (flag == ANALYSIS_SUCCESS) {
                 state_ = STATE_FINISH;
                 break;
@@ -451,6 +478,10 @@ void httpData::parseRecvMsg(int fd){
         //cout << "state_=" << state_ << endl;
         if (!error_) {
             response(fd, outBuffer_);
+            if(bKeepAliveEachClient==false)
+            {
+
+            }
 //            if (outBuffer_.size() > 0)
 //            {
 //                handleWrite();
@@ -479,6 +510,18 @@ void httpData::parseRecvMsg(int fd){
 //                }while(nLeftCountToTransfer>0)
 //            }
 
+        }
+        else{
+            if(auto temp=m_ptrServer.lock()) {
+                {
+//                         std::unique_lock<std::mutex> lock(temp->mu);
+                    std::unique_lock<std::mutex> lock(temp->m_muArray[fd]);
+                    m_mapFd[fd].clear();
+                    //temp->m_epoll.updateData(fd);
+                }
+                temp->m_epoll.epoll_del(fd);
+            }
+            close(fd);
         }
 
 
